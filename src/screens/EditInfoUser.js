@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import { doc, updateDoc } from 'firebase/firestore';
-import { auth, db } from '../config/firebase';
+import { auth, database } from '../config/firebase';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const EditarDatosScreen = ({ navigation, route }) => {
@@ -96,7 +96,7 @@ const EditarDatosScreen = ({ navigation, route }) => {
       }
 
       // Actualizar datos en Firestore
-      await updateDoc(doc(db, 'usuarios', user.uid), {
+      await updateDoc(doc(database, 'usuarios', user.uid), {
         nombre: formData.nombre,
         edad: parseInt(formData.edad),
         especialidad: formData.especialidad,
@@ -251,7 +251,7 @@ const EditarDatosScreen = ({ navigation, route }) => {
                 style={[styles.input, errors.especialidad && styles.inputError]}
                 value={formData.especialidad}
                 onChangeText={(value) => updateFormData('especialidad', value)}
-                placeholder="Tu especialidad médica"
+                placeholder="Tu especialidad"
                 autoCapitalize="words"
               />
               {errors.especialidad && <Text style={styles.errorText}>{errors.especialidad}</Text>}

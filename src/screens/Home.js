@@ -7,12 +7,11 @@ import {
   Alert,
   ScrollView,
   RefreshControl,
-  Image,
 } from 'react-native';
 import { signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../config/firebase';
-import Icon from 'react-native-vector-icons/Ionicons'; // Asegúrate de instalar react-native-vector-icons
+import { auth, database } from '../config/firebase';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const HomeScreen = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
@@ -27,11 +26,12 @@ const HomeScreen = ({ navigation }) => {
     try {
       const user = auth.currentUser;
       if (user) {
-        const userDoc = await getDoc(doc(db, 'usuarios', user.uid));
+        console.log("UID usuario loggeado:", user.uid);
+        const userDoc = await getDoc(doc(database, 'usuarios', user.uid));
         if (userDoc.exists()) {
           setUserData(userDoc.data());
         } else {
-          console.log('No se encontraron datos del usuario');
+          Alert.alert('Atención', 'No se encontraron datos del usuario');
         }
       }
     } catch (error) {
@@ -48,34 +48,20 @@ const HomeScreen = ({ navigation }) => {
     setRefreshing(false);
   };
 
-  const handleLogout = () => {
-    Alert.alert(
-      'Cerrar Sesión',
-      '¿Estás seguro de que deseas cerrar sesión?',
-      [
-        {
-          text: 'Cancelar',
-          style: 'cancel',
-        },
-        {
-          text: 'Cerrar Sesión',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await signOut(auth);
-              navigation.replace('RegistroScreen');
-            } catch (error) {
-              console.error('Error al cerrar sesión:', error);
-              Alert.alert('Error', 'No se pudo cerrar la sesión');
-            }
-          },
-        },
-      ]
-    );
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigation.replace('RegistroScreen');
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+      Alert.alert('Error', 'No se pudo cerrar la sesión');
+    }
   };
 
   const handleEditProfile = () => {
-    navigation.navigate('EditarDatosScreen', { userData });
+    if (userData) {
+      navigation.navigate('EditarDatosScreen', { userData });
+    }
   };
 
   const getInitials = (nombre) => {
@@ -107,7 +93,9 @@ const HomeScreen = ({ navigation }) => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerContent}>
-          <Text style={styles.welcomeText}>¡Bienvenido!</Text>
+          <Text style={styles.welcomeText}>
+            ¡Bienvenid@ {userData?.nombre || 'Usuario'}!
+          </Text>
           <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
             <Icon name="log-out-outline" size={24} color="#e74c3c" />
           </TouchableOpacity>
@@ -148,17 +136,6 @@ const HomeScreen = ({ navigation }) => {
               {userData?.especialidad || 'No especificada'}
             </Text>
           </View>
-
-          <View style={styles.detailItem}>
-            <Icon name="time-outline" size={20} color="#7f8c8d" />
-            <Text style={styles.detailLabel}>Miembro desde:</Text>
-            <Text style={styles.detailValue}>
-              {userData?.fechaRegistro 
-                ? new Date(userData.fechaRegistro).toLocaleDateString('es-ES')
-                : 'No disponible'
-              }
-            </Text>
-          </View>
         </View>
 
         <TouchableOpacity style={styles.editButton} onPress={handleEditProfile}>
@@ -166,7 +143,6 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.editButtonText}>Editar Información</Text>
         </TouchableOpacity>
       </View>
-
     </ScrollView>
   );
 };
@@ -211,7 +187,7 @@ const styles = StyleSheet.create({
   profileCard: {
     backgroundColor: '#ffffff',
     marginHorizontal: 20,
-    marginTop: -30,
+    marginTop: 0,
     borderRadius: 16,
     padding: 20,
     shadowColor: '#000',

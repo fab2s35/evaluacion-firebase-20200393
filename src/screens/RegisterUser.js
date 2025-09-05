@@ -12,7 +12,8 @@ import {
 } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { auth, db } from '../config/firebase'; // Asegúrate de tener tu config de Firebase
+import { auth, database } from '../config/firebase';
+
 
 const RegistroScreen = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -26,17 +27,13 @@ const RegistroScreen = ({ navigation }) => {
   const [errors, setErrors] = useState({});
 
   const especialidades = [
-    'Medicina General',
-    'Cardiología',
-    'Neurología',
-    'Pediatría',
-    'Ginecología',
-    'Dermatología',
-    'Traumatología',
-    'Psiquiatría',
-    'Radiología',
-    'Anestesiología',
-    'Otra'
+    'Desarrollo de Software',
+    'Diseño Gráfico',
+    'Automotríz',
+    'Electronica',
+    'Electromecánica',
+    'Arquitectura',
+    'Administrativo Contable'
   ];
 
   const validateForm = () => {
@@ -88,13 +85,14 @@ const RegistroScreen = ({ navigation }) => {
       );
 
       // Guardar información adicional en Firestore
-      await setDoc(doc(db, 'usuarios', userCredential.user.uid), {
-        nombre: formData.nombre,
-        correo: formData.correo,
-        edad: parseInt(formData.edad),
-        especialidad: formData.especialidad,
-        fechaRegistro: new Date().toISOString(),
-      });
+    await setDoc(doc(database, 'usuarios', userCredential.user.uid), {
+      nombre: formData.nombre,
+      correo: formData.correo,
+      edad: parseInt(formData.edad),
+      especialidad: formData.especialidad,
+      fechaRegistro: new Date().toISOString(),
+    });
+
 
       Alert.alert(
         'Registro Exitoso',
@@ -222,7 +220,7 @@ const RegistroScreen = ({ navigation }) => {
               style={[styles.input, errors.especialidad && styles.inputError]}
               value={formData.especialidad}
               onChangeText={(value) => updateFormData('especialidad', value)}
-              placeholder="Tu especialidad médica"
+              placeholder="Tu especialidad"
               autoCapitalize="words"
             />
             {errors.especialidad && <Text style={styles.errorText}>{errors.especialidad}</Text>}
