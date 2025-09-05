@@ -2,7 +2,7 @@
 
 Fabiola Aracely Retana Osorto 20200393
 
-**Enlace video demostrativo:** 
+**Enlace video demostrativo:** https://drive.google.com/file/d/1rWc3Bv99hAJZIjOpRKpLM23o4DrKPpg_/view?usp=drivesdk
 
 **Dependencias utilizadas en el proyecto:**
 @react-native-async-storage/async-storage
